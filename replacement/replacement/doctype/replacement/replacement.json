@@ -13,12 +13,18 @@
   {
    "fieldname": "item",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Item",
    "options": "Item"
   },
   {
    "fieldname": "replacement_item",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Replacement Item",
    "options": "Item"
   },
@@ -30,7 +36,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-01 12:42:03.387859",
+ "modified": "2024-01-02 11:46:10.544543",
  "modified_by": "Administrator",
  "module": "Replacement",
  "name": "Replacement",
