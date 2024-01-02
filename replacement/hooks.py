@@ -227,3 +227,12 @@ app_license = "mit"
 #	"Logging DocType Name": 30  # days to retain logs
 # }
 
+# doc_events = {
+#     "Sales Invoice": {
+#         "before_save": "replacement.replacement.test.create_reverse_replacement_doc",
+#         }}
+
+
+doctype_js = {
+    "Replacement" : "public/js/replace.js" ,
+    }
