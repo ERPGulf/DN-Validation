@@ -4,18 +4,26 @@ import frappe
 import sys
 from frappe import _
 import frappe
-import sys
 from frappe import _
-# from frappe.model.mapper import get_mapped_doc
-# from erpnext.controllers.sales_and_purchase_return import make_return_doc
-
 
 @frappe.whitelist(allow_guest=True)
 def validate_returned_quantity(doc_name):
     try:
         doc = frappe.get_doc('Delivery Note', doc_name)
-        for item in doc.items: 
-            validate_item_quantity(item, doc)
+        differences = {}
+
+        # Validate quantity for each item
+        for item in doc.items:
+            difference = validate_item_quantity(item, doc)
+            differences[item.name] = difference
+        has_zero_difference = any(difference == 0 for difference in differences.values())
+
+        if has_zero_difference:
+            # Set the document status to 'Closed'
+            frappe.db.set_value('Delivery Note', doc_name, 'status', 'Closed')
+        return differences
+    except frappe.DoesNotExistError:
+        frappe.msgprint(_("Delivery Note not found: {0}").format(doc_name))
     except Exception as e:
         frappe.msgprint(str(e))
 
@@ -26,7 +34,7 @@ def validate_item_quantity(item, delivery_note_doc):
     
     sales_invoice_name = frappe.get_value('Sales Invoice Item', {'delivery_note': delivery_note_doc.name}, 'parent')
 
-    qty_in_invoice = 0 # Initialize qty_in_invoice here
+    qty_in_invoice = 0
 
     if sales_invoice_name:
         sales_invoice_doc = frappe.get_doc('Sales Invoice', sales_invoice_name)
@@ -47,11 +55,6 @@ def validate_item_quantity(item, delivery_note_doc):
     difference = (original_qty - returned_qty) - qty_in_invoice
 
     item.difference = difference
+    return difference
+   
     
-    if difference == 0:
-        delivery_note_doc.db_set('status', 'Closed', commit=True, update_modified=True)
-        frappe.throw(_("Sales Return cannot be created for already completed delivery note {0} .").format(delivery_note_doc.name))
-        return
-    else:
-     
-        pass
